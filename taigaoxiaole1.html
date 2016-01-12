@@ -1,0 +1,169 @@
+<html>
+<body>
+
+<canvas id="dabian" style="border:1px solid #000000;" />
+
+<script>
+var c=document.getElementById("dabian");
+var cxt=c.getContext("2d");
+var W=document.body.clientWidth-18;
+var H=document.body.clientHeight-18;
+c.width=W;
+c.height=H;
+
+function Circle(x,y,r,color)
+{
+	cxt.fillStyle=color;
+	cxt.beginPath();
+	cxt.arc(x,y,r,0,2*Math.PI,true);
+	cxt.closePath();
+	cxt.fill();
+}
+
+	
+function sqr(x)
+{
+	return x*x;
+}
+
+function abs(x)
+{
+	if (x>0) return x;
+	return -x;
+}
+
+function calc(x)
+{
+	var tmp=x;
+	if (tmp<0) tmp=0;
+	if (tmp>255) tmp=255;
+	return Math.round(tmp);
+}
+
+function turn(x){
+	var tmp=x.toString(16).toUpperCase();
+	if (tmp.length<2) return "0"+tmp;
+	else return tmp;
+}
+
+function draw()
+{
+	cxt.clearRect(0,0,W,H);
+	var color;
+	
+	for (var i=1;i<=N;i++)
+	{
+		color="#"+ turn(R[i])+turn(G[i])+turn(B[i]);
+		Circle(x[i],y[i],r[i],color);
+		
+		if ((x[i]<r[i] && vx[i]<0) || (x[i]>W-r[i] && vx[i]>0)) vx[i]=-vx[i];
+		if ((y[i]<r[i] && vy[i]<0) || (y[i]>H-r[i] && vy[i]>0)) vy[i]=-vy[i];
+		
+		x[i]+= vx[i]*t/1000;
+		y[i]+= vy[i]*t/1000;
+		
+		if (random(1)<t/1000) pR[i]=-pR[i];
+		if (random(1)<t/1000) pG[i]=-pG[i];
+		if (random(1)<t/1000) pB[i]=-pB[i];
+		
+		if (R[i]+G[i]+B[i]>650) 
+		{
+			pR[i]=-1;
+			pG[i]=-1;
+			pB[i]=-1;
+		}
+		
+		R[i]=calc(R[i]+random(2)*pR[i]);
+		G[i]=calc(G[i]+random(2)*pG[i]);
+		B[i]=calc(B[i]+random(2)*pB[i]);
+	}
+		
+	//碰撞处理
+	var p=10;
+	for (var i=1;i<N;i++)
+		for (var j=i+1;j<=N;j++)
+			if (sqr(x[i]-x[j])+sqr(y[i]-y[j])<sqr(r[i]+r[j]))
+			{
+				var m1=sqr(r[i]);
+				var m2=sqr(r[j]);
+					
+				var d=Math.sqrt(sqr(x[i]-x[j])+sqr(y[i]-y[j]));
+				var cos=(y[j]-y[i])/d;
+				var sin=(x[j]-x[i])/d;
+					
+				var Vi1,Vi2,Vj1,Vj2;//1是碰撞速度，2是切向速度
+				Vi1=vy[i]*cos+vx[i]*sin;
+				Vi2=vy[i]*sin-vx[i]*cos;
+				Vj1=vy[j]*cos+vx[j]*sin;
+				Vj2=vy[j]*sin-vx[j]*cos;
+					
+				//if (Vi1<Vj1) continue;
+					
+				var Vi3,Vj3;
+				Vi3=((m1-m2)*Vi1+2*m2*Vj1)/(m1+m2);
+				Vj3=((m2-m1)*Vj1+2*m1*Vi1)/(m1+m2);
+					
+				vx[i]=Vi3*cos-Vi2*sin;
+				vy[i]=Vi3*sin+Vi2*cos;
+				vx[j]=Vj3*cos-Vj2*sin;
+				vy[j]=Vj3*sin+Vj2*cos;
+			}
+
+	setTimeout(draw, t);
+}
+
+function random(x){
+	return Math.random()*x;
+}
+
+var N=100;
+var t=10;
+var V=500;
+var r=new Array;
+var x=new Array;
+var y=new Array;
+var vx=new Array;
+var vy=new Array;
+var R=new Array;
+var G=new Array;
+var B=new Array;
+var pR=new Array;
+var pG=new Array;
+var pB=new Array;
+
+for (var i=1;i<=N;i++)
+{
+	var bj=true;
+	while (bj) 
+	{
+		r[i]=random(35)+15;
+		x[i]=r[i]+random(W-2*r[i]);
+		y[i]=r[i]+random(H-2*r[i]);
+		bj=false;
+		for (var j=1;j<i;j++)
+			if (sqr(x[i]-x[j])+sqr(y[i]-y[j])<sqr(r[i]+r[j]))
+			{
+				bj=true;
+				break;
+			}
+	}
+	
+	vx[i]=random(V)-V/2;
+	vy[i]=random(V)-V/2;
+	
+	R[i]=Math.round(random(255));
+	G[i]=Math.round(random(255));
+	B[i]=Math.round(random(255));
+	pR[i]=Math.round(random(1))*2-1;
+	pG[i]=Math.round(random(1))*2-1;
+	pB[i]=Math.round(random(1))*2-1;
+}
+
+draw();
+
+</script>
+
+
+
+</body>
+</html>
