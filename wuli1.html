@@ -65,7 +65,7 @@ function effect2(x,y,isz){
 	else tmp=p;
 	Hx = tmp * (2*x*x - y*y) / Math.pow(x*x + y*y, 2.5);
 	Hy = tmp * (3*x*y) / Math.pow(x*x + y*y, 2.5);
-	return Math.atan2(Hy,Hx);
+	return Math.atan2(Hy,Hx) - pi;
 }
 
 function draw()
@@ -77,6 +77,11 @@ function draw()
 	{
 		color="#"+ turn(R[i])+turn(G[i])+turn(B[i]);
 		Circle(x[i],y[i],r[i],color);
+		Circle(x[i]+3*Math.cos(angle[i]),y[i]+3*Math.sin(angle[i]),r[i],color);
+		Circle(x[i]+6*Math.cos(angle[i]),y[i]+6*Math.sin(angle[i]),r[i],color);
+		Circle(x[i]+9*Math.cos(angle[i]),y[i]+9*Math.sin(angle[i]),r[i],color);
+		Circle(x[i]+12*Math.cos(angle[i]),y[i]+12*Math.sin(angle[i]),r[i],color);
+		Circle(x[i]+15*Math.cos(angle[i]),y[i]+15*Math.sin(angle[i]),r[i],color);
 		
 		if (x[i]<0) x[i]=-x[i];
 		if (y[i]<0) y[i]=-y[i];
@@ -106,27 +111,7 @@ function draw()
 		var ay1 = 0.0;
 		var ax2 = 0.0;
 		var ay2 = 0.0;
-		for(var j=1;j<=N;++j)
-			if(i != j) {		//P[j] exert onto P[i]
-			 	var tx = x[i] + L/2.0 * Math.cos(angle[i]);
-			 	var ty = y[i] + L/2.0 * Math.sin(angle[i]);
-			 	var tp1 = effect1(tx-x[j], ty-y[j], 0);
-				var tp2 = effect2(tx-x[j], ty-y[j], 0);
-			 	tp2 = (tp2 + angle[j])%( 2*pi);
-			 	//
-			 	tp1 *= q * v0;
-			 	ax1 += tp1 * Math.cos(tp2);
-			 	ay1 += tp1 * Math.sin(tp2);
-				 	tx = x[i] - L/2.0 * Math.cos(angle[i]);
-			 	ty = y[i] - L/2.0 * Math.sin(angle[i]);
-			 	tp1 = effect1(tx-x[j], ty-y[j], 0);
-				tp2 = effect2(tx-x[j], ty-y[j], 0);
-			 	tp2 = (tp2 + angle[j])%( 2*pi);
-			 	//
-			 	tp1 *= q * v0;
-			 	ax2 += - tp1 * Math.cos(tp2);
-			 	ay2 += - tp1 * Math.sin(tp2);
-			}
+		
 		
 			{		//MG[j] exert onto P[i]
 			 	var tx = x[i] + L/2.0 * Math.cos(angle[i]);
@@ -206,7 +191,7 @@ function random(x){
 	return Math.random()*x;
 }
 
-var N=2000;
+var N=10000;
 var t=10;
 var V=800;
 var r=new Array;
@@ -229,7 +214,7 @@ var Angle1=0;
 var Angle2=0;
 
 var q = 1e-4;
-var Q = 0.9;
+var Q = 0.1;
 
 var L = 1e-4; //length of per pole
 var L2 = 0.3;
